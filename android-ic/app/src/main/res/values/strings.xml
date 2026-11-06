@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">QR-JOEic</string>
+    <string name="title_activity_main">QR-JOEic</string>
+    <string name="package_name">app.qrjoe.studio.ic</string>
+    <string name="custom_url_scheme">app.qrjoe.studio.ic</string>
+</resources>

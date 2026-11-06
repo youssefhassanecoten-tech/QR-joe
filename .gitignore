@@ -1,0 +1,50 @@
+# Dependencies and build output
+node_modules/
+dist/
+dist-ssr/
+*.local
+build/
+.gradle/
+.kotlin/
+
+# Local toolchain (JDK + Android SDK)
+.tooling/
+
+# Build artifacts
+release/
+*.log
+logs/
+
+# Environment files (values are public VITE_* config; unignore the ones the build needs)
+.env*
+!.env
+!.env.ic
+!.env.forge
+
+# Generated Capacitor web assets (recreated by cap:sync / build scripts)
+**/app/src/main/assets/public/
+
+# Gradle / Android
+android/local.properties
+android-ic/local.properties
+android-forge/local.properties
+android/.gradle/
+android/build/
+android/app/build/
+android-ic/.gradle/
+android-ic/build/
+android-ic/app/build/
+android-forge/.gradle/
+android-forge/build/
+android-forge/app/build/
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

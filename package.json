@@ -1,0 +1,45 @@
+{
+  "name": "qr-joe",
+  "private": true,
+  "version": "4.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:ic": "vite --mode ic",
+    "dev:forge": "vite --mode forge",
+    "build": "tsc -b && vite build",
+    "build:ic": "tsc -b && vite build --mode ic",
+    "build:forge": "tsc -b && vite build --mode forge",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "cap:sync": "npm run build && npx cap sync android",
+    "android:apk": "npm run cap:sync && cd android && gradlew.bat assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.0",
+    "@capacitor/share": "^8.0.0",
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.23.0",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^1.66.0",
+    "qr-code-styling": "^1.9.2",
+    "qrcode-generator": "^2.0.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.89.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.5"
+  }
+}
+

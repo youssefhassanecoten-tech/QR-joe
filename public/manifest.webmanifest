@@ -1,0 +1,18 @@
+{
+  "name": "QR-JOE Studio",
+  "short_name": "QR-JOE",
+  "description": "Design, scan and share deeply customizable QR codes and digital business cards.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07070b",
+  "theme_color": "#07070b",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
