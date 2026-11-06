@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "dev:forge": "vite --mode forge",
+    "prebuild": "node scripts/ensure-ic-stubs.mjs",
     "build": "tsc -b && vite build",
+    "prebuild:forge": "node scripts/ensure-ic-stubs.mjs",
     "build:forge": "tsc -b && vite build --mode forge",
     "lint": "oxlint",
+    "guard": "node scripts/check-repo.mjs",
     "preview": "vite preview",
     "cap:sync": "npm run build && npx cap sync android",
     "android:apk": "npm run cap:sync && cd android && gradlew.bat assembleDebug"

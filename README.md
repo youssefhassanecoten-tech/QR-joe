@@ -1,5 +1,7 @@
 # QR-JOE
 
+[![CI](https://github.com/youssefhassanecoten-tech/QR-joe/actions/workflows/ci.yml/badge.svg)](https://github.com/youssefhassanecoten-tech/QR-joe/actions/workflows/ci.yml)
+
 A local-first QR studio with deep visual customization, on-device scanning, digital vCard profiles, the QR-JOE Duo offline/online dual-QR system, and a separate QR-JOE Forge NFC developer app.
 
 **Current version: 4.4.0** (see `CHANGELOG.md` and `src/version.ts`)
@@ -41,8 +43,23 @@ Windows launchers in the project root:
 - `Run QR-JOE.bat` — start the web app
 - `Build Android APK.bat` — build `release\QR-JOE.apk`
 - `Build QR-JOE Forge APK.bat` — build `release\QR-JOE-Forge.apk`
+- `Publish Release.bat` — tag, create the GitHub release, upload the APK and refresh the in-app update feed
 
 Android builds use the local toolchain in `.tooling/` (JDK 21 + Android SDK 36). Install the produced APKs from `release/` by sideloading.
+
+## Releases & updates
+
+APKs are published as **GitHub Releases** (never committed to git). Every release refreshes
+`qrjoe-update.json`, so installed apps (4.3.0+) show the in-app update banner automatically.
+
+Two equivalent release paths:
+
+1. **Local** — run `Publish Release.bat` with a `Contents: Read and write` token (kept in memory only).
+2. **CI** — push a tag `v<version>` (or run the *Publish release* workflow manually); GitHub Actions
+   builds the APK, creates the release and pushes the feed update.
+
+CI on every push runs lint, repository guards (encoding, version sync, no private files, no APKs in git),
+the web build, and uploads a debug APK artifact.
 
 ## Stack
 

@@ -12,6 +12,7 @@ build/
 
 # Build artifacts
 release/
+artifacts/
 *.log
 logs/
 
