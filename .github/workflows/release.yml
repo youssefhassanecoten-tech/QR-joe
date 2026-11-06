@@ -29,40 +29,66 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # The local Publish Release script creates the release (and its tag) through the API;
+      # that tag push re-triggers this workflow, which must then do nothing.
+      - name: Skip when the release already exists
+        id: existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify tag matches package.json
-        if: startsWith(github.ref, 'refs/tags/')
+        if: steps.existing.outputs.exists != 'true' && startsWith(github.ref, 'refs/tags/')
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
 
       - name: Install dependencies
+        if: steps.existing.outputs.exists != 'true'
         run: npm ci
 
       - name: Repository guards
+        if: steps.existing.outputs.exists != 'true'
         run: npm run guard
 
       - name: Build web app
+        if: steps.existing.outputs.exists != 'true'
         run: npm run build
 
       - name: Sync Capacitor
+        if: steps.existing.outputs.exists != 'true'
         run: npx cap sync android
 
+      - name: Set up Android SDK
+        if: steps.existing.outputs.exists != 'true'
+        uses: android-actions/setup-android@v3
+
       - name: Ensure Android 36 platform
+        if: steps.existing.outputs.exists != 'true'
         run: sdkmanager --install "platforms;android-36"
 
       - name: Build debug APK
+        if: steps.existing.outputs.exists != 'true'
         working-directory: android
         run: bash gradlew assembleDebug --no-daemon
 
       - name: Stage APK
+        if: steps.existing.outputs.exists != 'true'
         run: |
           mkdir -p release
           cp android/app/build/outputs/apk/debug/app-debug.apk release/QR-JOE.apk
 
       - name: Configure git identity
+        if: steps.existing.outputs.exists != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Create release, upload APK, refresh update feed
+        if: steps.existing.outputs.exists != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/publish-release.mjs

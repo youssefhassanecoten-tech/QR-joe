@@ -59,6 +59,8 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - uses: android-actions/setup-android@v3
+
       - name: Ensure Android 36 platform
         run: sdkmanager --install "platforms;android-36"
 
