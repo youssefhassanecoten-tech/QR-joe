@@ -59,10 +59,11 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - uses: android-actions/setup-android@v3
-
       - name: Ensure Android 36 platform
-        run: sdkmanager --install "platforms;android-36"
+        run: |
+          SDKMANAGER="$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}" -name sdkmanager -type f | sort | tail -1)"
+          echo "Using $SDKMANAGER"
+          "$SDKMANAGER" --install "platforms;android-36"
 
       - name: Build debug APK
         working-directory: android

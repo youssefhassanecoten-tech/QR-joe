@@ -62,13 +62,12 @@ jobs:
         if: steps.existing.outputs.exists != 'true'
         run: npx cap sync android
 
-      - name: Set up Android SDK
-        if: steps.existing.outputs.exists != 'true'
-        uses: android-actions/setup-android@v3
-
       - name: Ensure Android 36 platform
         if: steps.existing.outputs.exists != 'true'
-        run: sdkmanager --install "platforms;android-36"
+        run: |
+          SDKMANAGER="$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}" -name sdkmanager -type f | sort | tail -1)"
+          echo "Using $SDKMANAGER"
+          "$SDKMANAGER" --install "platforms;android-36"
 
       - name: Build debug APK
         if: steps.existing.outputs.exists != 'true'
