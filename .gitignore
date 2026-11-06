@@ -18,8 +18,13 @@ logs/
 # Environment files (values are public VITE_* config; unignore the ones the build needs)
 .env*
 !.env
-!.env.ic
 !.env.forge
+
+# QR-JOEic variant (local only, never published)
+android-ic/
+src/ic/
+Build QR-JOEic APK.bat
+Preview QR-JOEic.bat
 
 # Generated Capacitor web assets (recreated by cap:sync / build scripts)
 **/app/src/main/assets/public/

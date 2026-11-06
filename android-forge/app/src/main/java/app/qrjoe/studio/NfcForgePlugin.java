@@ -6,6 +6,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,14 +31,14 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
     private NfcAdapter adapter;
     private PluginCall pendingCall;
     private NdefMessage pendingMessage;
-    private boolean writeMode;
+    private String operation = "read";
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private final Runnable timeout = () -> {
         if (pendingCall != null) {
             PluginCall call = pendingCall;
             finish();
-            call.reject("No NFC tag was detected. Tap Write or Read and try again.");
+            call.reject("No NFC tag was detected. Hold the tag to the back of the phone and try again.");
         }
     };
 
@@ -67,19 +68,6 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
 
     @PluginMethod
     public void writeTag(PluginCall call) {
-        if (adapter == null) {
-            call.reject("NFC is not available on this device.");
-            return;
-        }
-        if (!adapter.isEnabled()) {
-            call.reject("NFC is disabled. Turn it on first.");
-            return;
-        }
-        if (pendingCall != null) {
-            call.reject("An NFC operation is already running.");
-            return;
-        }
-
         String url = call.getString("url", "").trim();
         String vcard = call.getString("vcard", "").trim();
         String primary = call.getString("primary", "online");
@@ -102,29 +90,32 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
             if (offline != null) records.add(offline);
         }
 
+        if (!begin(call, "write")) return;
         pendingMessage = new NdefMessage(records.toArray(new NdefRecord[0]));
-        pendingCall = call;
-        writeMode = true;
         startReader();
     }
 
     @PluginMethod
     public void readTag(PluginCall call) {
-        if (adapter == null) {
-            call.reject("NFC is not available on this device.");
-            return;
-        }
-        if (!adapter.isEnabled()) {
-            call.reject("NFC is disabled. Turn it on first.");
-            return;
-        }
-        if (pendingCall != null) {
-            call.reject("An NFC operation is already running.");
-            return;
-        }
-        pendingCall = call;
-        pendingMessage = null;
-        writeMode = false;
+        if (!begin(call, "read")) return;
+        startReader();
+    }
+
+    @PluginMethod
+    public void formatTag(PluginCall call) {
+        if (!begin(call, "format")) return;
+        startReader();
+    }
+
+    @PluginMethod
+    public void lockTag(PluginCall call) {
+        if (!begin(call, "lock")) return;
+        startReader();
+    }
+
+    @PluginMethod
+    public void infoTag(PluginCall call) {
+        if (!begin(call, "info")) return;
         startReader();
     }
 
@@ -136,6 +127,25 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
             pending.reject("NFC operation cancelled.");
         }
         call.resolve();
+    }
+
+    private boolean begin(PluginCall call, String op) {
+        if (adapter == null) {
+            call.reject("NFC is not available on this device.");
+            return false;
+        }
+        if (!adapter.isEnabled()) {
+            call.reject("NFC is disabled. Turn it on first.");
+            return false;
+        }
+        if (pendingCall != null) {
+            call.reject("An NFC operation is already running.");
+            return false;
+        }
+        pendingCall = call;
+        pendingMessage = null;
+        operation = op;
+        return true;
     }
 
     private void startReader() {
@@ -154,16 +164,29 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
         handler.postDelayed(timeout, 60_000);
         JSObject event = new JSObject();
         event.put("state", "waiting");
+        event.put("operation", operation);
         notifyListeners("state", event);
     }
 
     @Override
     public void onTagDiscovered(Tag tag) {
         if (pendingCall == null) return;
-        if (writeMode) {
-            writeToTag(tag);
-        } else {
-            readFromTag(tag);
+        switch (operation) {
+            case "write":
+                writeToTag(tag);
+                break;
+            case "format":
+                formatTagOnTouch(tag);
+                break;
+            case "lock":
+                lockTagOnTouch(tag);
+                break;
+            case "info":
+                readInfoFromTag(tag);
+                break;
+            default:
+                readFromTag(tag);
+                break;
         }
     }
 
@@ -183,7 +206,7 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
                 ndef.connect();
                 ndef.writeNdefMessage(message);
                 ndef.close();
-                JSObject result = new JSObject();
+                JSObject result = describe(tag);
                 result.put("bytes", size);
                 result.put("maxSize", maxSize);
                 result.put("records", message.getRecords().length);
@@ -192,6 +215,94 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
             } catch (Exception error) {
                 finish();
                 call.reject(error.getMessage() == null ? "NFC write failed." : error.getMessage());
+            }
+        }).start();
+    }
+
+    private void formatTagOnTouch(Tag tag) {
+        PluginCall call = pendingCall;
+        new Thread(() -> {
+            try {
+                Ndef ndef = Ndef.get(tag);
+                JSObject result = describe(tag);
+                if (ndef != null) {
+                    if (!ndef.isWritable()) throw new Exception("This tag is read-only and cannot be wiped.");
+                    int maxSize = ndef.getMaxSize();
+                    ndef.connect();
+                    ndef.writeNdefMessage(emptyMessage());
+                    ndef.close();
+                    result.put("path", "ndef");
+                    result.put("maxSize", maxSize);
+                } else {
+                    NdefFormatable formattable = NdefFormatable.get(tag);
+                    if (formattable == null) {
+                        throw new Exception("This tag does not support NDEF formatting.");
+                    }
+                    formattable.connect();
+                    formattable.format(null);
+                    formattable.close();
+                    result.put("path", "formatable");
+                    result.put("maxSize", 0);
+                }
+                result.put("formatted", true);
+                finish();
+                call.resolve(result);
+            } catch (Exception error) {
+                finish();
+                call.reject(error.getMessage() == null ? "Format failed." : error.getMessage());
+            }
+        }).start();
+    }
+
+    private void lockTagOnTouch(Tag tag) {
+        PluginCall call = pendingCall;
+        new Thread(() -> {
+            try {
+                Ndef ndef = Ndef.get(tag);
+                if (ndef == null) throw new Exception("This tag is not NDEF-formatted.");
+                ndef.connect();
+                int maxSize = ndef.getMaxSize();
+                ndef.makeReadOnly();
+                boolean locked = !ndef.isWritable();
+                ndef.close();
+                if (!locked) throw new Exception("The tag refused the read-only lock.");
+                JSObject result = describe(tag);
+                result.put("writable", false);
+                result.put("maxSize", maxSize);
+                result.put("locked", true);
+                finish();
+                call.resolve(result);
+            } catch (Exception error) {
+                finish();
+                call.reject(error.getMessage() == null ? "Lock failed." : error.getMessage());
+            }
+        }).start();
+    }
+
+    private void readInfoFromTag(Tag tag) {
+        PluginCall call = pendingCall;
+        new Thread(() -> {
+            try {
+                Ndef ndef = Ndef.get(tag);
+                JSObject result = describe(tag);
+                result.put("formatted", ndef != null);
+                if (ndef != null) {
+                    ndef.connect();
+                    result.put("maxSize", ndef.getMaxSize());
+                    result.put("writable", ndef.isWritable());
+                    NdefMessage message = ndef.getNdefMessage();
+                    result.put("records", message == null ? 0 : message.getRecords().length);
+                    ndef.close();
+                } else {
+                    result.put("maxSize", 0);
+                    result.put("writable", false);
+                    result.put("records", 0);
+                }
+                finish();
+                call.resolve(result);
+            } catch (Exception error) {
+                finish();
+                call.reject(error.getMessage() == null ? "Tag info failed." : error.getMessage());
             }
         }).start();
     }
@@ -220,7 +331,7 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
                         records.put(item);
                     }
                 }
-                JSObject result = new JSObject();
+                JSObject result = describe(tag);
                 result.put("records", records);
                 result.put("maxSize", maxSize);
                 result.put("writable", writable);
@@ -231,6 +342,39 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
                 call.reject(error.getMessage() == null ? "NFC read failed." : error.getMessage());
             }
         }).start();
+    }
+
+    private NdefMessage emptyMessage() {
+        return new NdefMessage(
+            new NdefRecord[] { new NdefRecord(NdefRecord.TNF_EMPTY, new byte[0], new byte[0], new byte[0]) }
+        );
+    }
+
+    private JSObject describe(Tag tag) {
+        JSObject result = new JSObject();
+        byte[] id = tag.getId();
+        if (id != null) {
+            result.put("uid", toHex(id));
+            result.put("uidBytes", id.length);
+        } else {
+            result.put("uid", "");
+            result.put("uidBytes", 0);
+        }
+        JSArray techs = new JSArray();
+        String[] list = tag.getTechList();
+        if (list != null) {
+            for (String tech : list) techs.put(tech);
+        }
+        result.put("techs", techs);
+        return result;
+    }
+
+    private String toHex(byte[] bytes) {
+        StringBuilder builder = new StringBuilder(bytes.length * 2);
+        for (byte value : bytes) {
+            builder.append(String.format("%02X", value));
+        }
+        return builder.toString();
     }
 
     private String recordValue(NdefRecord record) {
@@ -257,6 +401,7 @@ public class NfcForgePlugin extends Plugin implements NfcAdapter.ReaderCallback 
         handler.removeCallbacks(timeout);
         pendingCall = null;
         pendingMessage = null;
+        operation = "read";
         getActivity().runOnUiThread(() -> {
             if (adapter != null) adapter.disableReaderMode(getActivity());
         });

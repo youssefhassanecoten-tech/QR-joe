@@ -12,16 +12,41 @@ export interface NdefRecordInfo {
   value: string
 }
 
-export interface NfcWriteResult {
+export interface NfcTagDescriptor {
+  uid: string
+  uidBytes: number
+  techs: string[]
+}
+
+export interface NfcWriteResult extends NfcTagDescriptor {
   bytes: number
   maxSize: number
   records: number
 }
 
-export interface NfcReadResult {
+export interface NfcReadResult extends NfcTagDescriptor {
   records: NdefRecordInfo[]
   maxSize: number
   writable: boolean
+}
+
+export interface NfcFormatResult extends NfcTagDescriptor {
+  formatted: boolean
+  path: 'ndef' | 'formatable'
+  maxSize: number
+}
+
+export interface NfcLockResult extends NfcTagDescriptor {
+  locked: boolean
+  writable: boolean
+  maxSize: number
+}
+
+export interface NfcInfoResult extends NfcTagDescriptor {
+  formatted: boolean
+  writable: boolean
+  maxSize: number
+  records: number
 }
 
 export interface NfcForgePlugin {
@@ -29,6 +54,9 @@ export interface NfcForgePlugin {
   openSettings(): Promise<void>
   writeTag(options: { url?: string; vcard?: string; primary?: 'online' | 'offline' }): Promise<NfcWriteResult>
   readTag(): Promise<NfcReadResult>
+  formatTag(): Promise<NfcFormatResult>
+  lockTag(): Promise<NfcLockResult>
+  infoTag(): Promise<NfcInfoResult>
   cancel(): Promise<void>
 }
 

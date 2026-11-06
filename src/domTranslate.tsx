@@ -38,6 +38,20 @@ function translatePattern(value: string): string | null {
     const count = Number(entries[1])
     return `${entries[1]} ${ruPlural(count, 'запись', 'записи', 'записей')}`
   }
+  const codes = value.match(/^Batch · (\d+) codes$/)
+  if (codes) {
+    const count = Number(codes[1])
+    return `Пакет · ${codes[1]} ${ruPlural(count, 'код', 'кода', 'кодов')}`
+  }
+  const singleCodes = value.match(/^(\d+) codes$/)
+  if (singleCodes) {
+    const count = Number(singleCodes[1])
+    return `${singleCodes[1]} ${ruPlural(count, 'код', 'кода', 'кодов')}`
+  }
+  const seed = value.match(/^Seed (\d+)$/)
+  if (seed) return `Сид ${seed[1]}`
+  const noMatches = value.match(/^No entries match "(.+)"\.$/)
+  if (noMatches) return `Нет записей по запросу «${noMatches[1]}».`
   const time = value.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/)
   if (time) {
     let hour = Number(time[1])

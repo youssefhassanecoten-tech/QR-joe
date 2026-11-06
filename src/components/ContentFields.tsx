@@ -7,6 +7,7 @@ import {
   LocateFixed,
   Mail,
   MapPin,
+  Layers,
   MessageSquare,
   Music,
   Phone,
@@ -44,6 +45,7 @@ const contentTypes: Array<{ value: ContentType; label: string; icon: typeof Link
   { value: 'wifi', label: 'Wi-Fi', icon: Wifi },
   { value: 'geo', label: 'Location', icon: MapPin },
   { value: 'vcard', label: 'Card', icon: ContactRound },
+  { value: 'batch', label: 'Batch', icon: Layers },
   { value: 'music', label: 'Music', icon: Music },
 ]
 
@@ -457,6 +459,27 @@ export function ContentFields({
                 </p>
               </>
             )}
+          </div>
+        ) : null}
+
+        {content.type === 'batch' ? (
+          <div className="space-y-3">
+            <Field
+              label="Payloads"
+              hint={`${content.batch.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).length} codes`}
+            >
+              <TextArea
+                value={content.batch}
+                onChange={(event) => update({ batch: event.target.value })}
+                className="min-h-40 font-mono text-[12px]"
+                placeholder={'https://example.com/1\nhttps://example.com/2\nhttps://example.com/3'}
+                spellCheck={false}
+              />
+            </Field>
+            <p className="text-[11px] leading-relaxed text-zinc-500">
+              One payload per line. The live preview shows the first code; Download PNG exports every code as a
+              labeled print sheet.
+            </p>
           </div>
         ) : null}
       </div>

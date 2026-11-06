@@ -13,6 +13,9 @@ const TYPE_RU: Record<string, string> = {
   vCard: 'vCard',
   Audio: 'Аудио',
   Contact: 'Контакт',
+  Batch: 'Пакет',
+  'EAN-8': 'EAN-8',
+  'EAN/UPC': 'EAN-13',
 }
 
 export function typeLabel(type: string, lang: LabelLang): string {
@@ -28,6 +31,7 @@ const LABEL_PREFIXES: Array<[string, string]> = [
   ['SMS → ', 'SMS → '],
   ['Wi-Fi → ', 'Wi-Fi → '],
   ['Location → ', 'Геолокация → '],
+  ['Batch · ', 'Пакет · '],
   ['Digital card', 'Цифровая карточка'],
 ]
 

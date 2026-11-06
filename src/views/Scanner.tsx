@@ -1,8 +1,9 @@
-﻿import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'react'
 import {
   Camera,
   CameraOff,
   CheckCircle2,
+  ClipboardPaste,
   Copy,
   ExternalLink,
   History,
@@ -106,6 +107,11 @@ export function Scanner({
     setScanning(false)
     setError(null)
     void playScanSound()
+    try {
+      navigator.vibrate?.(45)
+    } catch {
+      // vibration unsupported
+    }
     notify('QR code scanned.', 'success')
     onDetected({
       id: uid(),
@@ -188,6 +194,40 @@ export function Scanner({
       notify('No QR code was found in that image.', 'error')
     } finally {
       setReadingFile(false)
+    }
+  }
+
+  const processFileRef = useRef(processFile)
+  useEffect(() => {
+    processFileRef.current = processFile
+  })
+
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      const items = Array.from(event.clipboardData?.items ?? [])
+      const file = items.find((entry) => entry.type.startsWith('image/'))?.getAsFile()
+      if (!file) return
+      event.preventDefault()
+      void processFileRef.current(file)
+    }
+    window.addEventListener('paste', onPaste)
+    return () => window.removeEventListener('paste', onPaste)
+  }, [])
+
+  const pasteFromClipboard = async () => {
+    try {
+      if (!navigator.clipboard?.read) throw new Error('unsupported')
+      const items = await navigator.clipboard.read()
+      for (const item of items) {
+        const type = item.types.find((entry) => entry.startsWith('image/'))
+        if (!type) continue
+        const blob = await item.getType(type)
+        await processFile(new File([blob], 'pasted.png', { type }))
+        return
+      }
+      notify('No image found in the clipboard.', 'error')
+    } catch {
+      notify('Press Ctrl+V (Cmd+V) to paste an image.', 'error')
     }
   }
 
@@ -387,6 +427,15 @@ export function Scanner({
             <Button
               variant="secondary"
               size="sm"
+              onClick={() => void pasteFromClipboard()}
+              disabled={readingFile}
+            >
+              <ClipboardPaste className="h-3.5 w-3.5" />
+              Paste image
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => void DuoScan()}
               disabled={!scanning || readingFile}
             >
@@ -559,7 +608,7 @@ export function Scanner({
                     >
                       <p className="truncate font-mono text-[11px] text-zinc-300">{entry.data}</p>
                       <p className="text-[10px] text-zinc-600">
-                        {entry.contentType} Ã‚Â· {relativeTime(entry.createdAt)}
+                        {entry.contentType} · {relativeTime(entry.createdAt)}
                       </p>
                     </button>
                     <IconButton
@@ -580,6 +629,3 @@ export function Scanner({
     </div>
   )
 }
-
-
-

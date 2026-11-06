@@ -5,6 +5,7 @@ import {
   ExternalLink,
   History as HistoryIcon,
   ScanLine,
+  Search,
   Sparkles,
   Trash2,
 } from 'lucide-react'
@@ -13,7 +14,7 @@ import { relativeTime, safeExternalUrl, truncate } from '../lib/utils'
 import { useI18n } from '../i18n'
 import { useNotice } from '../hooks/useNotice'
 import { NoticeBar } from '../components/NoticeBar'
-import { Badge, Button, EmptyState, IconButton, Panel, Segmented } from '../components/ui'
+import { Badge, Button, EmptyState, IconButton, Panel, Segmented, TextInput } from '../components/ui'
 
 type Filter = 'all' | 'scanned' | 'generated'
 
@@ -31,11 +32,18 @@ export function History({
   const { t } = useI18n()
   const { notice, notify, dismiss } = useNotice()
   const [filter, setFilter] = useState<Filter>('all')
+  const [query, setQuery] = useState('')
 
-  const filtered = useMemo(
-    () => (filter === 'all' ? entries : entries.filter((entry) => entry.kind === filter)),
-    [entries, filter],
-  )
+  const filtered = useMemo(() => {
+    const kindFiltered = filter === 'all' ? entries : entries.filter((entry) => entry.kind === filter)
+    const needle = query.trim().toLowerCase()
+    if (!needle) return kindFiltered
+    return kindFiltered.filter((entry) =>
+      [entry.label, entry.data, entry.contentType, entry.kind].some((part) =>
+        part.toLowerCase().includes(needle),
+      ),
+    )
+  }, [entries, filter, query])
 
   const copyEntry = async (entry: HistoryEntry) => {
     try {
@@ -94,6 +102,16 @@ export function History({
           columns={3}
           className="w-full max-w-md"
         />
+        <div className="relative w-full sm:w-72">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <TextInput
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search history..."
+            className="pl-9"
+            aria-label="Search history"
+          />
+        </div>
         <div className="w-full sm:w-auto">
           <NoticeBar notice={notice} onDismiss={dismiss} />
         </div>
@@ -103,8 +121,12 @@ export function History({
         {filtered.length === 0 ? (
           <EmptyState
             icon={HistoryIcon}
-            title="Nothing here yet"
-            description="Scan a code or export one from the Studio and it will show up in this log."
+            title={query.trim() ? 'No matches' : 'Nothing here yet'}
+            description={
+              query.trim()
+                ? `No entries match "${query.trim()}".`
+                : 'Scan a code or export one from the Studio and it will show up in this log.'
+            }
           />
         ) : (
           <div className="space-y-1.5">

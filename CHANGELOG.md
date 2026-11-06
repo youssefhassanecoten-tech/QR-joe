@@ -7,6 +7,15 @@ The visible version is `major.middle.minor`:
 
 Any future change must ship with an incremented version, a new entry in `src/version.ts`, and an update to this file.
 
+## 4.4.0 — 2026-11-06
+- Batch content type: one payload per line, exported as a labeled PNG print sheet.
+- Scanner reads barcodes (EAN/UPC) from uploads and supports paste-image scanning with haptic feedback.
+- History search filters entries by label, type and payload.
+- Caption font selector: Modern, Classic, Mono, Soft.
+- Generative art textures for Art mode (blobs, waves, stars, contours) with seeded remixing.
+- Repaired Russian translations that were corrupted by an encoding bug.
+- QR-JOE Forge v1.1.0: tag info (UID/tech list), wipe, permanent read-only lock and a session tag log.
+
 ## 4.3.0 — 2026-11-06
 - Built-in update feed with automatic update prompts.
 - Default feed hosted on the GitHub repository.
@@ -52,7 +61,7 @@ Any future change must ship with an incremented version, a new entry in `src/ver
 - Full Russian translation layer for the entire interface.
 - Localized dynamic counts, relative times, clock times and content-type labels.
 - Instant restoration of English when switching back.
-- Backup screen and warning dialog translated in QR-JOEic.
+- Backup screen and warning dialog fully translated.
 
 ## 3.2.1 — 2026-11-03
 - Moved language and theme toggles to the persistent sidebar and mobile top bar.

@@ -12,7 +12,7 @@ import {
 import type { CardProfile, ContentState, HistoryEntry, QrDesign } from '../types'
 import { defaultDesign } from '../types'
 import { buildPayload, contentTypeLabel, payloadLabel } from '../lib/payload'
-import { copyPngToClipboard, exportPdf, exportPng, exportSvg } from '../lib/export'
+import { copyPngToClipboard, exportBatchPng, exportPdf, exportPng, exportSvg } from '../lib/export'
 import { useNotice } from '../hooks/useNotice'
 import { uid } from '../lib/utils'
 import { ContentFields } from '../components/ContentFields'
@@ -144,8 +144,15 @@ export function Studio({
                 onClick={() =>
                   runExport(
                     'png',
-                    () => exportPng(payload, design, label),
-                    'PNG exported — ready to share.',
+                    () =>
+                      content.type === 'batch'
+                        ? exportBatchPng(
+                            content.batch.split(/\r?\n/).map((line) => line.trim()).filter(Boolean),
+                            design,
+                            label,
+                          )
+                        : exportPng(payload, design, label),
+                    content.type === 'batch' ? 'Batch PNG exported.' : 'PNG exported - ready to share.',
                   )
                 }
               >

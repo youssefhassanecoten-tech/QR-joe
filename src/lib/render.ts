@@ -1,7 +1,18 @@
-﻿import QRCodeStyling, { type Options } from 'qr-code-styling'
-import type { QrDesign } from '../types'
+import QRCodeStyling, { type Options } from 'qr-code-styling'
+import type { CaptionFont, QrDesign } from '../types'
 import { ensureContrast, roundedRectPath, withAlpha } from './canvas'
 import { renderMatrixCanvas } from './matrix'
+
+const CAPTION_FONTS: Record<CaptionFont, string> = {
+  modern: "'Space Grotesk','Inter',system-ui,sans-serif",
+  classic: "Georgia,'Times New Roman',serif",
+  mono: "'JetBrains Mono','Fira Code',ui-monospace,monospace",
+  soft: "Quicksand,Nunito,'Trebuchet MS',sans-serif",
+}
+
+export function captionFontStack(design: QrDesign): string {
+  return CAPTION_FONTS[design.captionFont] ?? CAPTION_FONTS.modern
+}
 
 const BASE = 1024
 
@@ -147,10 +158,16 @@ async function blobToImage(blob: Blob): Promise<CanvasImageSource> {
   }
 }
 
-function fitCaption(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, startSize: number): number {
+function fitCaption(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  startSize: number,
+  fontStack: string,
+): number {
   let size = startSize
   while (size > 8) {
-    ctx.font = `700 ${size}px "Space Grotesk", "Inter", system-ui, sans-serif`
+    ctx.font = `700 ${size}px ${fontStack}`
     if (ctx.measureText(text).width <= maxWidth) break
     size -= 1
   }
@@ -260,9 +277,10 @@ export async function renderCompositeDataUrl(payload: string, design: QrDesign, 
     }
     const text = design.caption.trim()
     const maxWidth = size - layout.pad * 2
-    const fontSize = fitCaption(ctx, text, maxWidth, layout.fontSize)
+    const fontStack = captionFontStack(design)
+    const fontSize = fitCaption(ctx, text, maxWidth, layout.fontSize, fontStack)
     ctx.fillStyle = design.captionColor
-    ctx.font = `700 ${fontSize}px "Space Grotesk", "Inter", system-ui, sans-serif`
+    ctx.font = `700 ${fontSize}px ${fontStack}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(text, size / 2, layout.captionY)
@@ -350,7 +368,7 @@ export async function renderFramedSvg(payload: string, design: QrDesign, size: n
   if (layout.hasCaption) {
     const fontSize = Math.round(layout.fontSize * Math.min(1, (size - layout.pad * 2) / Math.max(1, design.caption.length * layout.fontSize * 0.62)))
     parts.push(
-      `<text x="${size / 2}" y="${layout.captionY}" fill="${design.captionColor}" font-family="'Space Grotesk','Inter',system-ui,sans-serif" font-size="${Math.max(8, fontSize)}" font-weight="700" text-anchor="middle" dominant-baseline="central">${escapeXml(design.caption.trim())}</text>`,
+      `<text x="${size / 2}" y="${layout.captionY}" fill="${design.captionColor}" font-family="${captionFontStack(design)}" font-size="${Math.max(8, fontSize)}" font-weight="700" text-anchor="middle" dominant-baseline="central">${escapeXml(design.caption.trim())}</text>`,
     )
   }
 
@@ -359,4 +377,3 @@ export async function renderFramedSvg(payload: string, design: QrDesign, size: n
 }
 
 export { computeLayout }
-

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   AudioLines,
@@ -85,7 +85,7 @@ function buildCardData(result: ScannedResult, lang: 'en' | 'ru'): CardData {
         accent: '#8b5cf6',
         eyebrow,
         title: fullName(profile),
-        subtitle: [profile.title, profile.company].filter(Boolean).join(' Â· ') || undefined,
+        subtitle: [profile.title, profile.company].filter(Boolean).join(' · ') || undefined,
         rows: [
           { icon: Phone, value: profile.phone },
           { icon: Mail, value: profile.email },
@@ -131,7 +131,7 @@ function buildCardData(result: ScannedResult, lang: 'en' | 'ru'): CardData {
       title: wifi.ssid || 'Wi-Fi',
       subtitle: wifi.security.toUpperCase(),
       rows: [
-        { icon: Wifi, value: wifi.ssid || 'â€”' },
+        { icon: Wifi, value: wifi.ssid || '—' },
         { icon: Globe, value: wifi.security.toUpperCase() },
         ...(wifi.password ? [{ icon: Type, value: wifi.password }] : []),
         ...(wifi.hidden ? [{ icon: MapPin, value: 'Hidden network' }] : []),
@@ -195,8 +195,8 @@ function buildCardData(result: ScannedResult, lang: 'en' | 'ru'): CardData {
       title: coords || 'Location',
       subtitle: 'Coordinates',
       rows: [
-        { icon: MapPin, value: lat ?? 'â€”' },
-        { icon: MapPin, value: lng ?? 'â€”' },
+        { icon: MapPin, value: lat ?? '—' },
+        { icon: MapPin, value: lng ?? '—' },
       ],
       openUrl: `https://yandex.ru/maps/?text=${encodeURIComponent(coords)}`,
     }
@@ -481,5 +481,3 @@ export function ScannedResultCard({ result }: { result: ScannedResult }) {
     </div>
   )
 }
-
-

@@ -1,6 +1,6 @@
 export type View = 'studio' | 'scan' | 'cards' | 'history' | 'backup' | 'legal' | 'version' | 'data'
 
-export type ContentType = 'url' | 'text' | 'email' | 'phone' | 'sms' | 'wifi' | 'geo' | 'vcard' | 'music'
+export type ContentType = 'url' | 'text' | 'email' | 'phone' | 'sms' | 'wifi' | 'geo' | 'vcard' | 'music' | 'batch'
 
 export interface ContentState {
   type: ContentType
@@ -25,6 +25,7 @@ export interface ContentState {
   musicArtist: string
   musicBpm: number
   musicNotes: string
+  batch: string
 }
 
 export interface SocialLink {
@@ -67,6 +68,8 @@ export type FrameStyle = 'none' | 'rounded' | 'banner' | 'ticket'
 export type QrMode = 'classic' | 'maze' | 'art'
 export type ErrorCorrection = 'L' | 'M' | 'Q' | 'H'
 export type CaptionPosition = 'top' | 'bottom'
+export type CaptionFont = 'modern' | 'classic' | 'mono' | 'soft'
+export type ArtTexture = 'blobs' | 'waves' | 'stars' | 'contours'
 
 export interface QrDesign {
   mode: QrMode
@@ -96,6 +99,9 @@ export interface QrDesign {
   frame: FrameStyle
   caption: string
   captionPosition: CaptionPosition
+  captionFont: CaptionFont
+  artTexture: ArtTexture
+  artSeed: number
   frameColor: string
   accentColor: string
   captionColor: string
@@ -127,6 +133,7 @@ export const defaultContent: ContentState = {
   musicArtist: '',
   musicBpm: 120,
   musicNotes: 'C5/2;E5/2;G5/2;C6/4',
+  batch: 'https://qrjoe.app/1\nhttps://qrjoe.app/2\nhttps://qrjoe.app/3',
 }
 
 export const defaultDesign: QrDesign = {
@@ -157,6 +164,9 @@ export const defaultDesign: QrDesign = {
   frame: 'banner',
   caption: 'SCAN ME',
   captionPosition: 'bottom',
+  captionFont: 'modern',
+  artTexture: 'blobs',
+  artSeed: 7,
   frameColor: '#101018',
   accentColor: '#8b5cf6',
   captionColor: '#f8fafc',

@@ -1,8 +1,8 @@
 {
-  "version": "4.3.0",
+  "version": "4.4.0",
   "url": "https://raw.githubusercontent.com/youssefhassanecoten-tech/QR-joe/main/artifacts/QR-JOE.apk",
   "notes": {
-    "en": "Rebuilt QR frames, self-update checker, Duo scanner hardening and encrypted local vault.",
-    "ru": "Переработанные рамки QR, проверка обновлений, улучшенный сканер Duo и зашифрованное локальное хранилище."
+    "en": "Batch PNG export, barcode and paste-image scanning, history search, caption fonts and generative art textures.",
+    "ru": "Пакетный экспорт PNG, сканирование штрихкодов и вставка изображений, поиск в истории, шрифты подписей и генеративные текстуры."
   }
 }

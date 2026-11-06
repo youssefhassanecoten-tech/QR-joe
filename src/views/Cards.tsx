@@ -115,7 +115,7 @@ export function Cards({
     if (!selected) return
     const prompt =
       lang === 'ru'
-        ? `Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ ${fullName(selected)}? Ð­Ñ‚Ð¾ Ð½ÐµÐ»ÑŒÐ·Ñ Ð¾Ñ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ.`
+        ? `Удалить ${fullName(selected)}? Это нельзя отменить.`
         : `Delete ${fullName(selected)}? This cannot be undone.`
     if (!window.confirm(prompt)) return
     setProfiles((prev) => prev.filter((profile) => profile.id !== selected.id))
@@ -165,7 +165,7 @@ export function Cards({
         id: uid(),
         kind: 'generated',
         contentType: contentTypeLabel('vcard'),
-        label: `Card â†’ ${fullName(selected)}`,
+        label: `Card → ${fullName(selected)}`,
         data: cardPayload,
         createdAt: Date.now(),
       })
@@ -391,7 +391,7 @@ export function Cards({
                 <div className="mt-3 space-y-2">
                   {selected.socials.length === 0 ? (
                     <p className="rounded-lg border border-dashed border-white/10 bg-black/10 px-3 py-4 text-center text-[11px] text-zinc-500">
-                      Add LinkedIn, X, GitHub, a portfolio â€” anything with a URL.
+                      Add LinkedIn, X, GitHub, a portfolio — anything with a URL.
                     </p>
                   ) : (
                     selected.socials.map((social) => (
@@ -405,7 +405,7 @@ export function Cards({
                         <TextInput
                           value={social.url}
                           onChange={(event) => updateSocial(social.id, { url: event.target.value })}
-                          placeholder="https://â€¦"
+                          placeholder="https://…"
                           spellCheck={false}
                           className="min-w-0 flex-1 px-2.5 py-2 text-xs"
                         />
@@ -452,9 +452,9 @@ export function Cards({
 
                 <Field label="Card format" className="mt-3">
                   <Select value={format} onChange={(event) => setFormat(event.target.value as CardFormat)}>
-                    <option value="vcard3">vCard 3.0 Â· .vcf</option>
-                    <option value="vcard4">vCard 4.0 Â· .vcf</option>
-                    <option value="mecard">MECARD Â· .txt</option>
+                    <option value="vcard3">vCard 3.0 · .vcf</option>
+                    <option value="vcard4">vCard 4.0 · .vcf</option>
+                    <option value="mecard">MECARD · .txt</option>
                   </Select>
                 </Field>
 
@@ -539,7 +539,7 @@ export function Cards({
                 {cardPayload.length > 2600 ? (
                   <p className="mt-2 text-[11px] leading-relaxed text-amber-300">
                     This profile is too detailed for a reliable QR code. Shorten the note or remove social links for
-                    the scannable code â€” the .vcf download keeps everything.
+                    the scannable code — the .vcf download keeps everything.
                   </p>
                 ) : null}
               </Panel>
@@ -600,7 +600,7 @@ export function Cards({
             <EmptyState
               icon={IdCard}
               title="Create your first digital card"
-              description="Add a name, role and a few links â€” QR-JOE turns it into a scannable vCard and a shareable contact file."
+              description="Add a name, role and a few links — QR-JOE turns it into a scannable vCard and a shareable contact file."
               action={
                 <Button variant="primary" onClick={createProfile}>
                   <Plus className="h-4 w-4" />
@@ -634,14 +634,3 @@ export function Cards({
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-

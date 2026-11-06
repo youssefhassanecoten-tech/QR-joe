@@ -59,6 +59,10 @@ export function buildPayload(content: ContentState, profiles: CardProfile[]): st
         profiles.find((item) => item.id === content.cardId) ?? profiles[0] ?? null
       return profile ? buildVCard(profile, false) : ''
     }
+    case 'batch': {
+      const first = content.batch.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)[0]
+      return first ?? ''
+    }
     case 'music':
       return content.musicMode === 'link'
         ? normalizeUrl(content.musicUrl)
@@ -89,6 +93,10 @@ export function payloadLabel(content: ContentState, profiles: CardProfile[]): st
         profiles.find((item) => item.id === content.cardId) ?? profiles[0] ?? null
       return profile ? `Card → ${fullName(profile)}` : 'Digital card'
     }
+    case 'batch': {
+      const lines = content.batch.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)
+      return `Batch · ${lines.length} codes`
+    }
     case 'music': {
       const title = content.musicTitle.trim() || (content.musicMode === 'link' ? 'Audio link' : 'Ringtone')
       return `Music → ${title}`
@@ -108,6 +116,8 @@ export function detectPayloadType(data: string): string {
   if (/^(SMSTO:|sms:)/i.test(value)) return 'SMS'
   if (/^geo:/i.test(value)) return 'Location'
   if (/^(MECARD:|MATMSG:|BEGIN:VEVENT)/i.test(value)) return 'Contact'
+  if (/^\d{8}$/.test(value)) return 'EAN-8'
+  if (/^\d{12,14}$/.test(value)) return 'EAN/UPC'
   if (/^https?:\/\/\S+\.(mp3|wav|ogg|m4a|aac|flac|opus)(\?\S*)?$/i.test(value)) return 'Audio'
   if (/^https?:\/\//i.test(value)) return 'Link'
   return 'Text'
@@ -124,6 +134,7 @@ export function contentTypeLabel(type: ContentType): string {
     geo: 'Location',
     vcard: 'Card',
     music: 'Music',
+    batch: 'Batch',
   }
   return labels[type]
 }

@@ -6,6 +6,7 @@ import {
   ImagePlus,
   Layers,
   Palette,
+  RefreshCw,
   RotateCcw,
   Route,
   Settings2,
@@ -14,8 +15,9 @@ import {
   Upload,
   Wand2,
 } from 'lucide-react'
-import type { DotStyle, QrDesign } from '../types'
+import type { ArtTexture, DotStyle, QrDesign } from '../types'
 import { designPresets, randomPatch } from '../lib/presets'
+import { generateArtTexture } from '../lib/artGen'
 import { cn, fileToOptimizedDataUrl } from '../lib/utils'
 import {
   Button,
@@ -220,6 +222,53 @@ export function DesignControls({
                 </IconButton>
               ) : null}
             </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Field label="Texture">
+                <Segmented
+                  value={design.artTexture}
+                  onChange={(value) => setDesign({ artTexture: value })}
+                  options={[
+                    { value: 'blobs', label: 'Blobs' },
+                    { value: 'waves', label: 'Waves' },
+                    { value: 'stars', label: 'Stars' },
+                    { value: 'contours', label: 'Contours' },
+                  ]}
+                  columns={2}
+                />
+              </Field>
+              <Field label="Generative art" hint={`Seed ${design.artSeed}`}>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={() => {
+                      const seed = design.artSeed + 1
+                      setDesign({ artSeed: seed, artImage: generateArtTexture({ ...design, artSeed: seed }) })
+                    }}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Generate
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      const seed = design.artSeed + 1
+                      const options: ArtTexture[] = ['blobs', 'waves', 'stars', 'contours']
+                      const texture = options[(options.indexOf(design.artTexture) + 1) % options.length]
+                      setDesign({
+                        artSeed: seed,
+                        artTexture: texture,
+                        artImage: generateArtTexture({ ...design, artSeed: seed, artTexture: texture }),
+                      })
+                    }}
+                  >
+                    Remix
+                  </Button>
+                </div>
+              </Field>
+            </div>
             <Slider
               label="Art fade"
               value={design.artFade}
@@ -390,6 +439,20 @@ export function DesignControls({
                 />
               </Field>
             ) : null}
+
+            <Field label="Caption font">
+              <Segmented
+                value={design.captionFont}
+                onChange={(value) => setDesign({ captionFont: value })}
+                options={[
+                  { value: 'modern', label: 'Modern' },
+                  { value: 'classic', label: 'Classic' },
+                  { value: 'mono', label: 'Mono' },
+                  { value: 'soft', label: 'Soft' },
+                ]}
+                columns={4}
+              />
+            </Field>
 
             <div className="grid grid-cols-3 gap-2.5">
               <ColorField

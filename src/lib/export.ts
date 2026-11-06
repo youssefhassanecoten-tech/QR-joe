@@ -56,6 +56,50 @@ export async function exportPng(payload: string, design: QrDesign, label: string
   downloadDataUrl(dataUrl, filename)
 }
 
+export async function exportBatchPng(
+  payloads: string[],
+  design: QrDesign,
+  name: string,
+): Promise<void> {
+  const list = payloads.map((payload) => payload.trim()).filter(Boolean)
+  if (list.length === 0) throw new Error('Nothing to export.')
+  const count = list.length
+  const columns = count <= 3 ? count : Math.ceil(Math.sqrt(count))
+  const rows = Math.ceil(count / columns)
+  const gap = 28
+  const cell = Math.min(520, Math.floor(1600 / columns))
+  const labelHeight = 54
+  const canvas = document.createElement('canvas')
+  canvas.width = columns * cell + (columns + 1) * gap
+  canvas.height = rows * (cell + labelHeight) + (rows + 1) * gap
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Canvas is unavailable')
+  context.fillStyle = '#ffffff'
+  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.fillStyle = '#111827'
+  context.textAlign = 'left'
+  context.textBaseline = 'middle'
+
+  for (let index = 0; index < count; index += 1) {
+    const url = await renderCompositeDataUrl(list[index], design, cell)
+    const image = await loadImage(url)
+    const column = index % columns
+    const row = Math.floor(index / columns)
+    const x = gap + column * (cell + gap)
+    const y = gap + row * (cell + labelHeight + gap)
+    context.drawImage(image, x, y, cell, cell)
+    context.font = '700 20px Inter, system-ui, sans-serif'
+    context.fillText(`${index + 1}`, x, y + cell + 22)
+    context.font = '14px Inter, system-ui, sans-serif'
+    const text = list[index].length > 52 ? `${list[index].slice(0, 51)}…` : list[index]
+    context.fillStyle = '#6b7280'
+    context.fillText(text, x + 34, y + cell + 22)
+    context.fillStyle = '#111827'
+  }
+
+  downloadDataUrl(canvas.toDataURL('image/png'), `${fileSafeName(name)}-batch.png`)
+}
+
 export async function exportSvg(payload: string, design: QrDesign, label: string): Promise<void> {
   const svg = await renderFramedSvg(payload, design, design.size)
   const filename = `${fileSafeName(label)}-${timestamp()}.svg`
@@ -203,5 +247,3 @@ export async function downloadCardFile(
   }
   downloadBlob(new Blob([payload], { type: 'text/plain;charset=utf-8' }), filename)
 }
-
-

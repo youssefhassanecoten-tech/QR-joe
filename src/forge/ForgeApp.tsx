@@ -2,18 +2,31 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   AlertTriangle,
   CheckCircle2,
+  Info,
+  Lock,
   Nfc,
   Radio,
   RefreshCw,
   ShieldCheck,
   Smartphone,
+  Trash2,
   Zap,
 } from 'lucide-react'
-import { NfcForge, type NdefRecordInfo, type NfcStatus } from './NfcForge'
+import { NfcForge, type NdefRecordInfo, type NfcStatus, type NfcTagDescriptor } from './NfcForge'
 import { parseVCard } from '../lib/vcard'
 import { DigitalProfileCard } from '../components/DigitalProfileCard'
 import { Badge, Button, Field, Panel, SectionHeading, Select, TextArea, TextInput } from '../components/ui'
-import { cn } from '../lib/utils'
+import { cn, relativeTime, uid } from '../lib/utils'
+
+type BusyOp = 'write' | 'read' | 'format' | 'lock' | 'info'
+
+interface TagLogEntry {
+  id: string
+  op: BusyOp
+  tone: 'ok' | 'error'
+  text: string
+  at: number
+}
 
 const sampleVCard = [
   'BEGIN:VCARD',
@@ -33,10 +46,12 @@ export function ForgeApp() {
   const [url, setUrl] = useState('https://your-domain.com/#card=')
   const [vcard, setVcard] = useState(sampleVCard)
   const [primary, setPrimary] = useState<'online' | 'offline'>('online')
-  const [busy, setBusy] = useState<'write' | 'read' | null>(null)
+  const [busy, setBusy] = useState<BusyOp | null>(null)
   const [notice, setNotice] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
   const [records, setRecords] = useState<NdefRecordInfo[]>([])
   const [readInfo, setReadInfo] = useState<{ maxSize: number; writable: boolean } | null>(null)
+  const [tagInfo, setTagInfo] = useState<NfcTagDescriptor | null>(null)
+  const [tagLog, setTagLog] = useState<TagLogEntry[]>([])
 
   const profile = useMemo(() => parseVCard(vcard), [vcard])
   const bytes = useMemo(() => new TextEncoder().encode(`${vcard}\n${url}`).length, [vcard, url])
@@ -53,46 +68,101 @@ export function ForgeApp() {
     void refresh()
   }, [])
 
-  const write = async () => {
-    setBusy('write')
+  const log = (op: BusyOp, tone: 'ok' | 'error', text: string) => {
+    setTagLog((prev) => [{ id: uid(), op, tone, text, at: Date.now() }, ...prev].slice(0, 12))
+  }
+
+  const run = async <T,>(op: BusyOp, task: () => Promise<T>, onOk: (result: T) => string) => {
+    setBusy(op)
     setNotice(null)
     try {
-      const result = await NfcForge.writeTag({ url: url.trim(), vcard, primary })
-      setNotice({
-        tone: 'ok',
-        text: `Tag written: ${result.bytes} bytes across ${result.records} record(s). Capacity ${result.maxSize} bytes.`,
-      })
+      const result = await task()
+      const text = onOk(result)
+      setNotice({ tone: 'ok', text })
+      log(op, 'ok', text)
     } catch (reason) {
-      setNotice({ tone: 'error', text: reason instanceof Error ? reason.message : 'NFC write failed.' })
+      const text = reason instanceof Error ? reason.message : `${op} failed.`
+      setNotice({ tone: 'error', text })
+      log(op, 'error', text)
     } finally {
       setBusy(null)
       void refresh()
     }
   }
 
-  const read = async () => {
-    setBusy('read')
-    setNotice(null)
-    try {
-      const result = await NfcForge.readTag()
-      setRecords(result.records)
-      setReadInfo({ maxSize: result.maxSize, writable: result.writable })
-      setNotice({ tone: 'ok', text: `Read ${result.records.length} NDEF record(s).` })
-    } catch (reason) {
-      setNotice({ tone: 'error', text: reason instanceof Error ? reason.message : 'NFC read failed.' })
-    } finally {
-      setBusy(null)
-      void refresh()
-    }
+  const write = () =>
+    run(
+      'write',
+      () => NfcForge.writeTag({ url: url.trim(), vcard, primary }),
+      (result) =>
+        `UID ${result.uid || 'unknown'} · wrote ${result.bytes} bytes across ${result.records} record(s). Capacity ${result.maxSize} bytes.`,
+    )
+
+  const read = () =>
+    run(
+      'read',
+      () => NfcForge.readTag(),
+      (result) => {
+        setRecords(result.records)
+        setReadInfo({ maxSize: result.maxSize, writable: result.writable })
+        setTagInfo(result)
+        return `UID ${result.uid || 'unknown'} · read ${result.records.length} NDEF record(s).`
+      },
+    )
+
+  const format = () =>
+    run(
+      'format',
+      () => NfcForge.formatTag(),
+      (result) => {
+        setRecords([])
+        setReadInfo(null)
+        setTagInfo(result)
+        return `UID ${result.uid || 'unknown'} · tag wiped to blank NDEF (${result.path}).`
+      },
+    )
+
+  const lock = () => {
+    if (!window.confirm('Lock this tag read-only permanently? A locked tag can never be rewritten.')) return
+    return run(
+      'lock',
+      () => NfcForge.lockTag(),
+      (result) => {
+        setReadInfo({ maxSize: result.maxSize, writable: result.writable })
+        setTagInfo(result)
+        return `UID ${result.uid || 'unknown'} · tag locked read-only. This cannot be undone.`
+      },
+    )
   }
+
+  const info = () =>
+    run(
+      'info',
+      () => NfcForge.infoTag(),
+      (result) => {
+        setTagInfo(result)
+        setReadInfo({ maxSize: result.maxSize, writable: result.writable })
+        return `UID ${result.uid || 'unknown'} · ${result.formatted ? 'NDEF formatted' : 'raw tag'} · ${result.writable ? 'writable' : 'read-only'} · ${result.techs.length} tech(s).`
+      },
+    )
 
   const cancel = async () => {
     await NfcForge.cancel()
     setBusy(null)
-    setNotice({ tone: 'error', text: 'NFC operation cancelled.' })
+    const text = 'NFC operation cancelled.'
+    setNotice({ tone: 'error', text })
+    log(busy ?? 'read', 'error', text)
   }
 
-  const waiting = busy === 'write' || busy === 'read'
+  const waiting = busy !== null
+
+  const opLabel: Record<BusyOp, string> = {
+    write: 'Hold the tag to write',
+    read: 'Hold the tag to read',
+    format: 'Hold the tag to wipe',
+    lock: 'Hold the tag to lock',
+    info: 'Hold the tag to inspect',
+  }
 
   return (
     <div className="relative min-h-svh overflow-x-clip">
@@ -176,6 +246,30 @@ export function ForgeApp() {
                     <Radio className="h-4 w-4" />
                     Read tag
                   </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => void info()}
+                    disabled={waiting || !status?.available || !status.enabled}
+                  >
+                    <Info className="h-4 w-4" />
+                    Tag info
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => void format()}
+                    disabled={waiting || !status?.available || !status.enabled}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Wipe
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => void lock()}
+                    disabled={waiting || !status?.available || !status.enabled}
+                  >
+                    <Lock className="h-4 w-4" />
+                    Lock
+                  </Button>
                   {waiting ? (
                     <Button variant="danger" onClick={() => void cancel()}>
                       Cancel
@@ -222,6 +316,19 @@ export function ForgeApp() {
 
             <Panel className="p-4 sm:p-5">
               <SectionHeading icon={Radio} title="Read result" description="NDEF records found on the last tag." />
+              {tagInfo ? (
+                <div className="mt-4 rounded-xl border border-white/8 bg-black/15 p-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge tone="brand">UID {tagInfo.uid || 'hidden'}</Badge>
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-600">
+                      {tagInfo.uidBytes} bytes
+                    </span>
+                  </div>
+                  <p className="mt-1.5 break-all font-mono text-[10px] leading-relaxed text-zinc-500">
+                    {tagInfo.techs.join(' · ')}
+                  </p>
+                </div>
+              ) : null}
               {records.length === 0 ? (
                 <p className="mt-4 rounded-xl border border-dashed border-white/10 bg-black/10 px-3 py-6 text-center text-[11px] text-zinc-500">
                   Read a tag to inspect its records here.
@@ -245,6 +352,42 @@ export function ForgeApp() {
                     </div>
                   ))}
                 </div>
+              )}
+            </Panel>
+
+            <Panel className="p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <SectionHeading
+                  icon={CheckCircle2}
+                  title="Tag log"
+                  description="Last 12 tag operations in this session."
+                />
+                {tagLog.length > 0 ? (
+                  <Button variant="ghost" size="sm" onClick={() => setTagLog([])}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Clear
+                  </Button>
+                ) : null}
+              </div>
+              {tagLog.length === 0 ? (
+                <p className="mt-4 rounded-xl border border-dashed border-white/10 bg-black/10 px-3 py-6 text-center text-[11px] text-zinc-500">
+                  Tap a tag and every result will be recorded here.
+                </p>
+              ) : (
+                <ul className="mt-4 space-y-1.5">
+                  {tagLog.map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="flex items-start gap-2 rounded-lg border border-white/6 bg-black/15 px-3 py-2"
+                    >
+                      <Badge tone={entry.tone === 'ok' ? 'success' : 'warning'}>{entry.op}</Badge>
+                      <span className="min-w-0 flex-1 break-all text-[11px] leading-relaxed text-zinc-400">
+                        {entry.text}
+                      </span>
+                      <span className="shrink-0 text-[10px] text-zinc-600">{relativeTime(entry.at)}</span>
+                    </li>
+                  ))}
+                </ul>
               )}
             </Panel>
           </div>
@@ -300,7 +443,7 @@ export function ForgeApp() {
                 <Nfc className="h-9 w-9" />
               </span>
               <h2 className="mt-6 font-display text-xl font-bold text-white">
-                {busy === 'write' ? 'Hold the tag to write' : 'Hold the tag to read'}
+                {busy ? opLabel[busy] : 'Hold the tag'}
               </h2>
               <p className="mt-1 text-xs text-zinc-400">Keep the tag against the back of the phone.</p>
               <Button variant="danger" size="sm" className="mt-4" onClick={() => void cancel()}>

@@ -1,4 +1,4 @@
-﻿import { BrowserQRCodeReader } from '@zxing/browser'
+import { BrowserQRCodeReader, BrowserMultiFormatReader } from '@zxing/browser'
 
 export interface DoubleQrResult {
   text: string
@@ -23,9 +23,21 @@ function loadImage(file: File): Promise<HTMLImageElement> {
 
 function decodeCanvas(canvas: HTMLCanvasElement, region: string): DoubleQrResult | null {
   try {
-    const result = new BrowserQRCodeReader().decodeFromCanvas(canvas)
-    const text = result.getText()?.trim()
-    return text ? { text, region } : null
+    try {
+      const qr = new BrowserQRCodeReader().decodeFromCanvas(canvas)
+      const qrText = qr.getText()?.trim()
+      if (qrText) return { text: qrText, region }
+    } catch {
+      // not a QR code, try barcodes
+    }
+    try {
+      const multi = new BrowserMultiFormatReader().decodeFromCanvas(canvas)
+      const text = multi.getText()?.trim()
+      if (text) return { text, region }
+    } catch {
+      return null
+    }
+    return null
   } catch {
     return null
   }

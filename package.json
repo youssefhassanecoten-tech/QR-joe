@@ -1,14 +1,12 @@
 {
   "name": "qr-joe",
   "private": true,
-  "version": "4.3.0",
+  "version": "4.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:ic": "vite --mode ic",
     "dev:forge": "vite --mode forge",
     "build": "tsc -b && vite build",
-    "build:ic": "tsc -b && vite build --mode ic",
     "build:forge": "tsc -b && vite build --mode forge",
     "lint": "oxlint",
     "preview": "vite preview",

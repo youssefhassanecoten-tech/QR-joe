@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { ArrowLeft, BookOpen, Lock, RefreshCw, Sparkles } from 'lucide-react'
 import { currentRelease, historyWithinMajorLimit, MAX_MAJOR_HISTORY, VERSION } from '../version'
 import { localized, useI18n } from '../i18n'
@@ -83,7 +83,7 @@ export function VersionView({ onBack, onReplayTutorial }: { onBack: () => void; 
               size="sm"
               disabled
               className="cursor-not-allowed opacity-40 grayscale"
-              title={`${t('version.pdf')} â€” ${t('version.pdfNote')}`}
+              title={`${t('version.pdf')} — ${t('version.pdfNote')}`}
             >
               <Lock className="h-3.5 w-3.5" />
               {t('version.pdf')}
@@ -91,7 +91,7 @@ export function VersionView({ onBack, onReplayTutorial }: { onBack: () => void; 
           </div>
         </div>
         <p className="mt-1 text-[10px] uppercase tracking-wider text-zinc-600">
-          {t('version.pdfNote')} Â· {t('version.majorLimit')}
+          {t('version.pdfNote')} · {t('version.majorLimit')}
         </p>
 
         <div className="mt-4 space-y-2">
@@ -178,5 +178,3 @@ export function VersionView({ onBack, onReplayTutorial }: { onBack: () => void; 
     </div>
   )
 }
-
-

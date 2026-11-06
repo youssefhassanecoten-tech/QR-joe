@@ -95,7 +95,7 @@ export function DualQrModal({
 
         {isLocalBase(publicBase) ? (
           <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-100">
-            Set a public HTTPS URL under â€œPublic card URLâ€ so other phones can open the online animated card.
+            Set a public HTTPS URL under “Public card URL” so other phones can open the online animated card.
           </p>
         ) : null}
 
