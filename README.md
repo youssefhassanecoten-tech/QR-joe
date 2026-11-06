@@ -9,7 +9,6 @@ A local-first QR studio with deep visual customization, on-device scanning, digi
 | App | Package | Description |
 | --- | --- | --- |
 | QR-JOE | `app.qrjoe.studio` | Main web + Android app |
-| QR-JOEic | `app.qrjoe.studio.ic` | Android variant with consent-gated camera backup to Yandex Disk |
 | QR-JOE Forge | `app.qrjoe.forge` | Standalone Android NFC developer app (write/read URL + vCard tags) |
 
 ## Features
