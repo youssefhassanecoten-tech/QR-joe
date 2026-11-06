@@ -7,6 +7,10 @@ The visible version is `major.middle.minor`:
 
 Any future change must ship with an incremented version, a new entry in `src/version.ts`, and an update to this file.
 
+## 4.3.0 — 2026-11-06
+- Built-in update feed with automatic update prompts.
+- Default feed hosted on the GitHub repository.
+
 ## 4.2.0 — 2026-11-03
 - Rebuilt QR frames: centered code, accent gradient, gradient caption bar.
 - Self-update checker with configurable version feed.
@@ -66,3 +70,4 @@ Any future change must ship with an incremented version, a new entry in `src/ver
 - Version badge and version page with current changes, 7-major-version history and a disabled full-history PDF placeholder.
 - First-visit and post-update guided tours with spotlight arrows.
 - Lazy-loaded views, smaller initial bundles and mobile layout refinements.
+

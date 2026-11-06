@@ -14,6 +14,17 @@ export interface ReleaseEntry {
 
 export const releases: ReleaseEntry[] = [
   {
+    version: '4.3.0',
+    major: 4,
+    middle: 3,
+    minor: 0,
+    date: '2026-11-06',
+    changes: [
+      { en: 'Built-in update feed with automatic update prompts.', ru: 'Встроенная лента обновлений с автоматическими уведомлениями.' },
+      { en: 'Default feed hosted on the QR-JOE GitHub repository.', ru: 'Лента обновлений размещена в репозитории QR-JOE на GitHub.' },
+    ],
+  },
+  {
     version: '4.2.0',
     major: 4,
     middle: 2,
@@ -332,6 +343,7 @@ export function historyWithinMajorLimit(): ReleaseEntry[] {
     (release) => release.version !== VERSION && currentRelease.major - release.major < MAX_MAJOR_HISTORY,
   )
 }
+
 
 
 

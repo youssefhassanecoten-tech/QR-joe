@@ -1,4 +1,6 @@
-export const UPDATE_FEED_KEY = 'qrjoe:update-feed'
+﻿export const UPDATE_FEED_KEY = 'qrjoe:update-feed'
+export const DEFAULT_UPDATE_FEED =
+  'https://raw.githubusercontent.com/youssefhassanecoten-tech/QR-joe/main/qrjoe-update.json'
 export const UPDATE_DISMISSED_KEY = 'qrjoe:update-dismissed'
 
 export interface UpdateInfo {
@@ -9,7 +11,9 @@ export interface UpdateInfo {
 
 export function readUpdateFeed(): string {
   try {
-    return localStorage.getItem(UPDATE_FEED_KEY) ?? ''
+    const stored = localStorage.getItem(UPDATE_FEED_KEY)
+    if (stored) return stored
+    return DEFAULT_UPDATE_FEED
   } catch {
     return ''
   }
@@ -67,3 +71,4 @@ export async function checkForUpdate(
     return { error: reason instanceof Error ? reason.message : 'network-error' }
   }
 }
+
