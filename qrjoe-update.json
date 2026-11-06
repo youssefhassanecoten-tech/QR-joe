@@ -1,8 +1,8 @@
 {
   "version": "4.4.0",
-  "url": "https://raw.githubusercontent.com/youssefhassanecoten-tech/QR-joe/main/artifacts/QR-JOE.apk",
+  "url": "https://github.com/youssefhassanecoten-tech/QR-joe/releases/download/v4.4.0/QR-JOE.apk",
   "notes": {
-    "en": "Batch PNG export, barcode and paste-image scanning, history search, caption fonts and generative art textures.",
-    "ru": "Пакетный экспорт PNG, сканирование штрихкодов и вставка изображений, поиск в истории, шрифты подписей и генеративные текстуры."
+    "en": "Batch content type: one payload per line, exported as a labeled PNG print sheet. Scanner reads barcodes from uploads and supports paste-image scanning with vibration. History search filters entries by label, type and payload. Caption font selector: Modern, Classic, Mono and Soft. Generative art textures with seeded remixing: blobs, waves, stars and contours. Repaired Russian translation strings corrupted by an encoding bug.",
+    "ru": "Тип контента «Пакет»: по одной нагрузке в строке и экспорт всех кодов на один PNG-лист с подписями. Сканер распознаёт штрихкоды на изображениях, вставляет картинку из буфера и вибрирует при сканировании. Поиск в истории фильтрует записи по подписи, типу и данным. Выбор шрифта подписи: современный, классический, моно и мягкий. Генеративные текстуры для режима «Арт» с зерном: кляксы, волны, звёзды и контуры. Восстановлены русские строки перевода, повреждённые ошибкой кодировки."
   }
 }
