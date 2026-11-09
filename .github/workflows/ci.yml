@@ -67,12 +67,16 @@ jobs:
           "$SDKMANAGER" --install "platforms;android-36"
 
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.14.3
 
       - name: Build debug APK
         working-directory: android
-        run: gradle assembleDebug --no-daemon
+        run: |
+          for attempt in 1 2 3; do
+            if bash gradlew assembleDebug --no-daemon; then exit 0; fi
+            echo "Gradle attempt $attempt failed (distribution downloads 504 intermittently); retrying in 30s"
+            sleep 30
+          done
+          exit 1
 
       - uses: actions/upload-artifact@v4
         with:
