@@ -71,11 +71,13 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         if: steps.existing.outputs.exists != 'true'
+        with:
+          gradle-version: 8.14.3
 
       - name: Build debug APK
         if: steps.existing.outputs.exists != 'true'
         working-directory: android
-        run: bash gradlew assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon
 
       - name: Stage APK
         if: steps.existing.outputs.exists != 'true'
