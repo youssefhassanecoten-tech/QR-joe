@@ -69,6 +69,9 @@ jobs:
           echo "Using $SDKMANAGER"
           "$SDKMANAGER" --install "platforms;android-36"
 
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.existing.outputs.exists != 'true'
+
       - name: Build debug APK
         if: steps.existing.outputs.exists != 'true'
         working-directory: android
