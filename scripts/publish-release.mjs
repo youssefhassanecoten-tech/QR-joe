@@ -89,15 +89,25 @@ async function publish() {
   })
 
   const buffer = fs.readFileSync(apk)
-  const form = new FormData()
-  form.append('file', new Blob([buffer], { type: 'application/vnd.android.package-archive' }), path.basename(apk))
-  const upload = await fetch(`${release.upload_url.replace('{?name,label}', '')}?name=${encodeURIComponent(path.basename(apk))}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
-  })
+  // Raw binary body: multipart/form-data gets stored verbatim by GitHub and corrupts the APK.
+  const upload = await fetch(
+    `${release.upload_url.replace('{?name,label}', '')}?name=${encodeURIComponent(path.basename(apk))}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/vnd.android.package-archive',
+        'Content-Length': String(buffer.length),
+      },
+      body: buffer,
+    },
+  )
   if (!upload.ok) {
     throw new Error(`Asset upload failed: ${upload.status} ${await upload.text()}`)
+  }
+  const asset = await upload.json()
+  if (asset.size !== buffer.length) {
+    throw new Error(`Asset size mismatch: stored ${asset.size} bytes, expected ${buffer.length}.`)
   }
   console.log(`Released ${name} -> ${release.html_url}`)
 
