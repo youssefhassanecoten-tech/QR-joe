@@ -4,7 +4,7 @@
 
 A local-first QR studio with deep visual customization, on-device scanning, digital vCard profiles, the QR-JOE Duo offline/online dual-QR system, and a separate QR-JOE Forge NFC developer app.
 
-**Current version: 4.4.0** (see `CHANGELOG.md` and `src/version.ts`)
+**Current version: 4.4.1** (see `CHANGELOG.md` and `src/version.ts`)
 
 ## Apps
 
@@ -71,6 +71,17 @@ the web build, and uploads a debug APK artifact.
 ## Stack
 
 React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · Capacitor 8 · QRCodeStyling · ZXing · jsPDF · Web Audio
+
+## License
+
+**Proprietary — all rights reserved.** QR-JOE is source-available, **not** open source.
+
+You may install and use unmodified official builds for personal, non-commercial purposes.
+Without prior written permission you may **not** copy, modify, translate, create derivative or
+"inspired" works, redistribute, sell or commercially exploit the app or any part of it.
+
+- Full terms: [LICENSE](LICENSE) (English) · [LICENSE.ru.md](LICENSE.ru.md) (Russian — prevails)
+- Open-source dependencies keep their own licenses.
 
 ## Versioning
 

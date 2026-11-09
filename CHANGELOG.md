@@ -7,6 +7,10 @@ The visible version is `major.middle.minor`:
 
 Any future change must ship with an incremented version, a new entry in `src/version.ts`, and an update to this file.
 
+## 4.4.1 — 2026-11-09
+- MIT replaced with a bilingual proprietary license: modification, resale, derivatives and "inspired" works are prohibited.
+- In-app Privacy & Usage Policy updated with the same prohibitions.
+
 ## 4.4.0 — 2026-11-06
 - Batch content type: one payload per line, exported as a labeled PNG print sheet.
 - Scanner reads barcodes (EAN/UPC) from uploads and supports paste-image scanning with haptic feedback.

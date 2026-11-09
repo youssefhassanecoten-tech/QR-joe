@@ -1,21 +1,73 @@
-MIT License
+QR-JOE PROPRIETARY LICENSE
+Version 1.0 — 9 November 2026
 
-Copyright (c) 2026 Youssef Hassan 
+Copyright (c) 2026 Youssef Hassan (QR-JOE). All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license governs the QR-JOE family of software and materials (together, the "Software"):
+QR-JOE, QR-JOE Duo and QR-JOE Forge, including source code, binaries, APK builds, designs,
+visual assets, animations, text, translations and documentation.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The Software is proprietary. It is NOT open source. It is made available only under the terms
+below. A Russian-language version is provided in LICENSE.ru.md; both texts are equally authentic
+and, in case of discrepancy, the Russian text prevails.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. LIMITED PERMISSION
+   1.1 Subject to this license, you are granted a personal, non-exclusive, non-transferable,
+       revocable, royalty-free right to install and use unmodified official builds of the
+       Software for personal, non-commercial purposes.
+   1.2 You may share links to the official Releases page. You may not share copies in a way
+       that suggests authorship or ownership other than the author's.
+
+2. PROHIBITED ACTS
+   You may not, without prior written permission from the copyright holder:
+   (a) copy, reproduce, republish, mirror, archive or redistribute the Software or any part of it;
+   (b) modify, adapt, translate, port, patch or create derivative works of the Software,
+       including works that are based on, derived from, or substantially inspired by its code,
+       design, visual assets, animations, text or concepts;
+   (c) reverse engineer, decompile or disassemble the Software, except to the extent that
+       mandatory law expressly allows;
+   (d) sell, resell, rent, lease, lend, sublicense, publish or otherwise commercially exploit
+       the Software, or any modified, derived or inspired version of it, including paid apps,
+       paid templates, paid services, ad-supported distribution or bundling;
+   (e) remove, hide or alter any copyright, license, branding or attribution notices;
+   (f) use the names "QR-JOE", "QR-JOE Duo" or "QR-JOE Forge", or the logos, in any way that
+       implies endorsement, affiliation or authorship that you do not have;
+   (g) bypass, disable or circumvent any license check, update channel or technical protection
+       measure of the Software.
+
+3. CONTRIBUTIONS
+   No contribution is accepted unless the copyright holder has agreed in writing beforehand.
+   Unsolicited pull requests, patches, suggestions or assets transfer no rights and may be
+   removed at any time.
+
+4. OWNERSHIP
+   The copyright holder retains all right, title and interest in and to the Software. No rights
+   are granted except as expressly stated in this license. All rights not expressly granted are
+   reserved.
+
+5. THIRD-PARTY COMPONENTS
+   The Software includes open-source components (for example React, Capacitor, QRCodeStyling,
+   ZXing, jsPDF and lucide) licensed by their respective authors. Those components remain
+   governed by their own licenses, which prevail over this license for that code only. This
+   license does not limit any rights you have under those separate licenses.
+
+6. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NON-INFRINGEMENT.
+
+7. LIMITATION OF LIABILITY
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT HOLDER IS NOT LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY, INCLUDING INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES,
+   LOSS OF DATA OR LOSS OF PROFITS, ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+8. TERMINATION
+   This license terminates automatically and immediately if you breach any of its terms. On
+   termination you must stop using the Software and delete all copies in your possession or
+   control.
+
+9. GOVERNING LAW AND LANGUAGE
+   This license is governed by the laws of the Russian Federation. The English and Russian texts
+   are equally authentic; in case of any discrepancy, the Russian text in LICENSE.ru.md prevails.
+
+Permissions and licensing requests: youssefhasanecoten@gmail.com

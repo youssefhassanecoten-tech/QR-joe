@@ -91,6 +91,10 @@ export const legalSections: LegalSection[] = [
         en: 'Reverse engineering, copying or redistributing the Service is prohibited except where applicable law expressly permits it.',
         ru: 'Обратная разработка, копирование или распространение Сервиса запрещены, кроме случаев, прямо разрешённых применимым законодательством.',
       },
+      {
+        en: 'Selling, reselling or otherwise commercially exploiting the Service is prohibited, as is publishing modified, derived or "inspired" versions, without prior written permission from the operator.',
+        ru: 'Продажа, перепродажа или иное извлечение коммерческой выгоды из Сервиса запрещены, как и публикация изменённых, производных или «вдохновлённых» версий, без предварительного письменного разрешения оператора.',
+      },
     ],
   },
   {
@@ -101,8 +105,8 @@ export const legalSections: LegalSection[] = [
         ru: 'Название QR-JOE, логотип, интерфейс, исходный код и визуальный дизайн принадлежат оператору и защищены применимым законодательством об интеллектуальной собственности. Все права, прямо не предоставленные, сохраняются за оператором.',
       },
       {
-        en: 'You receive a limited, revocable, non-exclusive license to use the Service for personal or internal business purposes.',
-        ru: 'Вам предоставляется ограниченная, отзывная, неисключительная лицензия на использование Сервиса в личных или внутренних деловых целях.',
+        en: 'You receive a limited, revocable, non-exclusive license to use the Service for personal or internal business purposes. Full terms are in the LICENSE file (English) and LICENSE.ru.md (Russian).',
+        ru: 'Вам предоставляется ограниченная, отзывная, неисключительная лицензия на использование Сервиса в личных или внутренних деловых целях. Полные условия — в файле LICENSE (английский) и LICENSE.ru.md (русский).',
       },
     ],
   },

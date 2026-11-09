@@ -14,6 +14,17 @@ export interface ReleaseEntry {
 
 export const releases: ReleaseEntry[] = [
   {
+    version: '4.4.1',
+    major: 4,
+    middle: 4,
+    minor: 1,
+    date: '2026-11-09',
+    changes: [
+      { en: 'Replaced the MIT license with a bilingual proprietary QR-JOE license that forbids modification, resale and derivative or inspired works.', ru: 'Лицензия MIT заменена двуязычной проприетарной лицензией QR-JOE, запрещающей изменение, перепродажу, а также производные и «вдохновлённые» работы.' },
+      { en: 'The in-app policy now explicitly forbids selling the app and publishing modified or inspired versions.', ru: 'Политика в приложении теперь прямо запрещает продажу приложения и публикацию изменённых или «вдохновлённых» версий.' },
+    ],
+  },
+  {
     version: '4.4.0',
     major: 4,
     middle: 4,
