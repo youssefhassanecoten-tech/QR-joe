@@ -47,6 +47,13 @@ Windows launchers in the project root:
 
 Android builds use the local toolchain in `.tooling/` (JDK 21 + Android SDK 36). Install the produced APKs from `release/` by sideloading.
 
+## Hosted web app
+
+**https://youssefhassanecoten-tech.github.io/QR-joe/** — the same web app deployed by the *Pages*
+workflow on every push. Activate it once via **Settings → Pages → Source: GitHub Actions**
+(the workflow starts deploying automatically after that). The hosted URL also works as the public
+base for QR-JOE Duo online cards (`#card=…`).
+
 ## Releases & updates
 
 APKs are published as **GitHub Releases** (never committed to git). Every release refreshes
